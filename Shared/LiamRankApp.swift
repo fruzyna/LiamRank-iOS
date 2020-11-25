@@ -18,6 +18,8 @@ struct LiamRankApp: App {
         }
     }
     
+    let server = GCDWebServer()
+    
     let docURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!  // documents folder
     let RELEASE_KEY = "CURRENT_RELEASE"
     
@@ -28,79 +30,119 @@ struct LiamRankApp: App {
     
     // start webserver
     func buildServer(repoURL: URL) {
+        let uploadsURL = repoURL.appendingPathComponent("uploads")
+        
+        server.addDefaultHandler(forMethod: "GET", request: GCDWebServerRequest.self, processBlock: { request in
+            var path = String(request.path.replacingOccurrences(of: "/config/", with: "/assets/").dropFirst())
+            if (path == "") {
+                path = "index.html"
+            }
+            let file = repoURL.appendingPathComponent(path)
+            
+            var ext = "json"
+            var start: String
+            
+            // load in TBA API key
+            if (path == "scripts/keys.js") {
+                let API_KEY = ""
+                let response = GCDWebServerDataResponse(text: "API_KEY=\"\(API_KEY)\"")
+                response!.contentType = "text/javascript"
+                return response
+            }
+            // respond to request for list of uploads
+            else if (path == "getPitResultNames") {
+                start = "pit"
+            }
+            else if (path == "getImageNames") {
+                start = "image"
+                ext = "png"
+            }
+            else if (path == "getMatchResultNames") {
+                start = "match"
+            }
+            else if (path == "getNoteNames") {
+                start = "note"
+            }
+            // about page
+            else if (path == "about") {
+                let contents = """
+                    <!DOCTYPE html>\
+                    <html lang="en">\
+                        <head>\
+                            <meta charset="utf-8"/>\
+                            <title>LiamRank</title>\
+                        </head>\
+                        <body>\
+                            <h1>LiamRank</h1>\
+                            LiamRankApp.swift Swift POST server<br>2020 Liam Fruzyna<br><a href="https://github.com/mail929/LiamRank-iOS">MPL Licensed on GitHub</a>\
+                        </body>\
+                    </html>
+                    """
+                let response = GCDWebServerDataResponse(text: contents)
+                response!.contentType = "text/html"
+                return response
+            }
+            // return normal files
+            else if FileManager.default.fileExists(atPath: file.path) {
+                return GCDWebServerFileResponse(file: file.relativePath)
+            }
+            else {
+                return GCDWebServerFileResponse(statusCode: 404)
+            }
+            
+            // build list of uploads
+            do {
+                var files = try FileManager.default.contentsOfDirectory(at: uploadsURL, includingPropertiesForKeys: nil)
+                files = files.filter { $0.lastPathComponent.starts(with: start) && $0.pathExtension == ext }
+                let names = files.map { $0.lastPathComponent }
+                let response = GCDWebServerDataResponse(text: names.joined(separator: ","))
+                response!.contentType = "text/plain"
+                return response
+            }
+            catch {
+                return GCDWebServerFileResponse(statusCode: 404)
+            }
+        })
+        
+        server.addDefaultHandler(forMethod: "POST", request: GCDWebServerDataRequest.self, processBlock: { request in
+            guard let dataReq = request as? GCDWebServerDataRequest else {
+                return GCDWebServerFileResponse(statusCode: 400)
+            }
+            if request.hasBody() {
+                let body = dataReq.text ?? ""
+                if body.contains("|||") {
+                    let parts = body.split(separator: "|")
+                    if parts.count == 2 {
+                        let name = parts[0]
+                        let data = parts[1]
+                        if data.starts(with: "data:image/png;base64,") {
+                            let decoded = data.data(using: .utf8)
+                            do {
+                                try decoded?.write(to: uploadsURL.appendingPathComponent("\(name).png"))
+                                return GCDWebServerResponse(statusCode: 200)
+                            }
+                            catch {
+                                print("[POST] Failed to write \(name).png")
+                                return GCDWebServerResponse(statusCode: 415)
+                            }
+                        }
+                        else {
+                            do {
+                                try data.write(to: uploadsURL.appendingPathComponent("\(name).json"), atomically: false, encoding: .utf8)
+                                return GCDWebServerResponse(statusCode: 200)
+                            }
+                            catch {
+                                print("[POST] Failed to write \(name).json")
+                                return GCDWebServerResponse(statusCode: 415)
+                            }
+                        }
+                    }
+                }
+            }
+            return GCDWebServerResponse(statusCode: 400)
+        })
+        
         DispatchQueue.main.async() {
-            let server = GCDWebServer()
-            server.addDefaultHandler(forMethod: "GET", request: GCDWebServerRequest.self, processBlock: { request in
-                var path = String(request.path.replacingOccurrences(of: "/config/", with: "/assets/").dropFirst())
-                if (path == "") {
-                    path = "index.html"
-                }
-                let file = repoURL.appendingPathComponent(path)
-                
-                var ext = "json"
-                var start: String
-                
-                // load in TBA API key
-                if (path == "scripts/keys.js") {
-                    let API_KEY = ""
-                    let response = GCDWebServerDataResponse(text: "API_KEY=\"\(API_KEY)\"")
-                    response!.contentType = "text/javascript"
-                    return response
-                }
-                // respond to request for list of uploads
-                else if (path == "getPitResultNames") {
-                    start = "pit"
-                }
-                else if (path == "getImageNames") {
-                    start = "image"
-                    ext = "png"
-                }
-                else if (path == "getMatchResultNames") {
-                    start = "match"
-                }
-                else if (path == "getNoteNames") {
-                    start = "note"
-                }
-                // about page
-                else if (path == "about") {
-                    let contents = """
-                        <!DOCTYPE html>\
-                        <html lang="en">\
-                            <head>\
-                                <meta charset="utf-8"/>\
-                                <title>LiamRank</title>\
-                            </head>\
-                            <body>\
-                                <h1>LiamRank</h1>\
-                                LiamRankApp.swift Swift GET server<br>2020 Liam Fruzyna<br><a href="https://github.com/mail929/LiamRank-iOS">MPL Licensed on GitHub</a>\
-                            </body>\
-                        </html>
-                        """
-                    let response = GCDWebServerDataResponse(text: contents)
-                    response!.contentType = "text/html"
-                    return response
-                }
-                // return normal files
-                else if FileManager.default.fileExists(atPath: file.path) {
-                    return GCDWebServerFileResponse(file: file.relativePath)
-                }
-                else {
-                    return GCDWebServerFileResponse(statusCode: 404)
-                }
-                
-                // build list of uploads
-                do {
-                    var files = try FileManager.default.contentsOfDirectory(at: repoURL.appendingPathComponent("uploads"), includingPropertiesForKeys: nil)
-                    files = files.filter { $0.lastPathComponent.starts(with: start) && $0.pathExtension == ext }
-                    let names = files.map { $0.lastPathComponent }
-                    let response = GCDWebServerDataResponse(text: names.joined(separator: ","))
-                    response!.contentType = "text/plain"
-                    return response
-                }
-                catch {
-                    return GCDWebServerFileResponse(statusCode: 404)
-                }
-            })
             server.start(withPort: 8080, bonjourName: "LiamRank iOS")
         }
     }
