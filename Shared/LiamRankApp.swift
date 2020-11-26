@@ -11,9 +11,10 @@ import ZIPFoundation
 
 /*
  * TODO
- * - Test back gestures
  * - Fix pit selection
  * - Check for update on app open
+ * - App icon
+ * - Loading screen
  */
 
 @main
@@ -28,11 +29,233 @@ struct LiamRankApp: App {
     let server = GCDWebServer()
     
     let docURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!  // documents folder
-    let RELEASE_KEY = "CURRENT_RELEASE"
+    let RELEASE_KEY = "LAST_USED_RELEASE"
     
+    /*
+     * UTILITY FUNCTIONS
+     */
+    
+    // process the latest release page to get its name
+    func determineRelease(fileURL: URL) -> String {
+        do {
+            let pageText = try String(contentsOf: fileURL)
+            let releaseSearchKey = "/mail929/LiamRank/releases/tag/"
+            if pageText.contains(releaseSearchKey) {
+                let releaseRange = pageText.range(of: releaseSearchKey)
+                var latestRelease = String(pageText[(releaseRange!.upperBound...)])
+                latestRelease = String(latestRelease[...latestRelease.firstIndex(of: "\"")!].dropLast())
+                print("[UPDATER] Latest release is \(latestRelease)")
+                return latestRelease
+            }
+            print("[UPDATER] Release search key not found")
+        }
+        catch {
+            print("[UPDATER] Release file not found")
+        }
+        return ""
+    }
+    
+    // find the last recorded release
+    func getLastRelease() -> String {
+        return UserDefaults().string(forKey: RELEASE_KEY) ?? "master"
+    }
+    
+    // determined if a given release is already downloaded
+    func isReleaseCached(release: String) -> Bool {
+        let fileManager = FileManager()
+        let path = docURL.appendingPathComponent("LiamRank-\(release)").relativePath
+        return fileManager.fileExists(atPath: path)
+    }
+    
+    // get list of files in a given directory
+    // throws if not a directory
+    func ls(dirURL: URL) throws -> String {
+        let files = try FileManager.default.contentsOfDirectory(at: dirURL, includingPropertiesForKeys: nil)
+        var output = ""
+        for file in files {
+            output += file.absoluteString + "\n"
+        }
+        return output
+    }
+    
+    /*
+     * EXECUTION
+     */
+    
+    // on startup
     init() {
-        let latestURL = URL(string: "https://github.com/mail929/LiamRank/releases/latest")!
-        URLSession.shared.downloadTask(with: latestURL, completionHandler: processLatest(urlOrNil:responseOrNil:errorOrNil:)).resume()
+        // TODO: user input on whether to use latest release
+        let useLatest = true
+        if useLatest {
+            let latestURL = URL(string: "https://github.com/mail929/LiamRank/releases/latest")!
+            URLSession.shared.downloadTask(with: latestURL, completionHandler: processLatest(urlOrNil:responseOrNil:errorOrNil:)).resume()
+        }
+        else {
+            // TODO: user input for release as option
+            useRelease(release: "")
+        }
+    }
+    
+    // determines the latest available release and runs server
+    func processLatest(urlOrNil: URL?, responseOrNil: URLResponse?, errorOrNil: Error?) {
+        let fileURL = urlOrNil
+        
+        if fileURL != nil {
+            // if given a valid URL, passes release found from it
+            useRelease(release: determineRelease(fileURL: fileURL!))
+        }
+        else {
+            print("[UPDATER] Could not retrieve latest release, using existing")
+            useRelease(release: "")
+        }
+    }
+    
+    // attempt to use a given or the last used release
+    func useRelease(release: String) {
+        var release = release
+        
+        // if no release was given
+        if release.count == 0 {
+            // use the last used release
+            release = getLastRelease()
+        }
+        
+        // if the desired release does not exist
+        if !isReleaseCached(release: release) {
+            // download it
+            fetchRelease(release: release)
+        }
+        else {
+            // otherwise, start app with release
+            startRelease(release: release)
+        }
+    }
+    
+    // fetch a given release from GitHub
+    func fetchRelease(release: String) {
+        print("[UPDATER] Fetching release \(release)")
+        let remoteURL = URL(string: "https://github.com/mail929/LiamRank/archive/\(release).zip")!
+        URLSession.shared.downloadTask(with: remoteURL, completionHandler: processArchive(urlOrNil:responseOrNil:errorOrNil:)).resume()
+    }
+    
+    // attempts to extract the archive and start the app, uses local on failure
+    func processArchive(urlOrNil: URL?, responseOrNil: URLResponse?, errorOrNil: Error?) {
+        let fileURL = urlOrNil
+        
+        if fileURL != nil {
+            let fileManager = FileManager()
+            let release = responseOrNil!.url!.lastPathComponent
+            
+            // remove existing extracted archive
+            do {
+                try fileManager.removeItem(at: docURL.appendingPathComponent("LiamRank-\(release)"))
+                print("[UPDATER] Removed existing release \(release)")
+            }
+            catch {
+                // directory did not exist
+            }
+            
+            // extract archive and start
+            do {
+                try fileManager.unzipItem(at: fileURL!, to: docURL)
+                startRelease(release: release)
+                return
+            }
+            catch {
+                print("[UPDATER] Error unzipping: \(error)")
+            }
+        }
+        else {
+            print("[UPDATER] Failed to download archive")
+        }
+        
+        // use a local release
+        findReleaseLocal()
+    }
+    
+    // find a release to use locally
+    func findReleaseLocal() {
+        // choose the last release
+        var release = getLastRelease()
+        
+        // if the last release does not exist
+        if !isReleaseCached(release: release) {
+            print("[LOCAL] Searching for any existing releases")
+            // try and find the newest release
+            release = searchForRelease()
+        }
+        
+        // if a release is found
+        if release.count > 0 {
+            // start
+            startRelease(release: release)
+        }
+        else {
+            // otherwise TODO: fail
+            print("[LOCAL] Failed to find any existing releases")
+        }
+    }
+    
+    // attempts to find the latest local release
+    func searchForRelease() -> String {
+        do {
+            var newestName = ""
+            var newestDate = Date(timeIntervalSince1970: 0)
+            
+            // lays out contents of documents folder
+            let files = try FileManager.default.contentsOfDirectory(at: docURL, includingPropertiesForKeys: nil)
+            for file in files {
+                // filters by potential releases
+                let name = file.lastPathComponent
+                if name.starts(with: "LiamRank-") {
+                    do {
+                        // determines last modification date
+                        let attrs = try FileManager.default.attributesOfItem(atPath: file.path)
+                        let date = attrs[FileAttributeKey.modificationDate]
+                        if date is Date {
+                            let dateDate = date as! Date
+                            print("[LOCAL] Found \(name) from \(dateDate)")
+                            // determines if the directory is newer
+                            if (dateDate > newestDate) {
+                                newestName = name
+                                newestDate = dateDate
+                            }
+                        }
+                        else {
+                            print("[LOCAL] Failed to parse date of file \(name)")
+                        }
+                    }
+                    catch {
+                        print("[LOCAL] Failed to get date of file \(name)")
+                    }
+                }
+            }
+            
+            // returns the release name if valid
+            if newestName.contains("-") {
+                return String(newestName.split(separator: "-")[1])
+            }
+        }
+        catch {
+            print("[LOCAL] Unable to get contents of documents directory")
+        }
+        return ""
+    }
+    
+    // start the webserver and webview with a given release
+    func startRelease(release: String) {
+        print("[SERVER] Starting server for release \(release)")
+        
+        // save the name of the release
+        UserDefaults().set(release, forKey: RELEASE_KEY)
+        
+        // construct the server for the release
+        buildServer(repoURL: docURL.appendingPathComponent("LiamRank-\(release)"))
+        
+        // load the main page
+        DispatchQueue.main.async() {
+            content.webview.loadPage()
+        }
     }
     
     // start webserver
@@ -41,7 +264,7 @@ struct LiamRankApp: App {
         
         server.addDefaultHandler(forMethod: "GET", request: GCDWebServerRequest.self, processBlock: { request in
             var path = String(request.path.replacingOccurrences(of: "/config/", with: "/assets/").dropFirst())
-            if (path == "") {
+            if path == "" {
                 path = "index.html"
             }
             let file = repoURL.appendingPathComponent(path)
@@ -50,28 +273,28 @@ struct LiamRankApp: App {
             var start: String
             
             // load in TBA API key
-            if (path == "scripts/keys.js") {
+            if path == "scripts/keys.js" {
                 let API_KEY = "g4Wgdb1euHxs8W83KQyxRC8mKws8uqwDkjTci5PLM5WX63vKbhFyRgjlVBq7VMQr"
                 let response = GCDWebServerDataResponse(text: "API_KEY=\"\(API_KEY)\"")
                 response!.contentType = "text/javascript"
                 return response
             }
             // respond to request for list of uploads
-            else if (path == "getPitResultNames") {
+            else if path == "getPitResultNames" {
                 start = "pit"
             }
-            else if (path == "getImageNames") {
+            else if path == "getImageNames" {
                 start = "image"
                 ext = "png"
             }
-            else if (path == "getMatchResultNames") {
+            else if path == "getMatchResultNames" {
                 start = "match"
             }
-            else if (path == "getNoteNames") {
+            else if path == "getNoteNames" {
                 start = "note"
             }
             // about page
-            else if (path == "about") {
+            else if path == "about" {
                 let contents = """
                     <!DOCTYPE html>\
                     <html lang="en">\
@@ -149,99 +372,10 @@ struct LiamRankApp: App {
             return GCDWebServerResponse(statusCode: 400)
         })
         
+        // start server on port 8080
+        // TODO: configure port
         DispatchQueue.main.async() {
             server.start(withPort: 8080, bonjourName: "LiamRank iOS")
         }
-    }
-    
-    // determines the latest available release and runs server
-    func processLatest(urlOrNil: URL?, responseOrNil: URLResponse?, errorOrNil: Error?) {
-        let fileURL = urlOrNil
-        
-        let prefs = UserDefaults()
-        var currentRelease = prefs.string(forKey: RELEASE_KEY) ?? "master"
-        var updating = false
-        if (fileURL != nil) {
-            do {
-                var pageText = try String(contentsOf: fileURL!)
-                let range = pageText.range(of: "/mail929/LiamRank/releases/tag/")
-                if range != nil {
-                    pageText = String(pageText[(range!.upperBound...)])
-                    let latestRelease = String(pageText[...pageText.firstIndex(of: "\"")!].dropLast())
-                    
-                    if (currentRelease != latestRelease) {
-                        // download source
-                        print("[UPDATER] Fetching release \(latestRelease)")
-                        let remoteURL = URL(string: "https://github.com/mail929/LiamRank/archive/\(latestRelease).zip")!
-                        URLSession.shared.downloadTask(with: remoteURL, completionHandler: processArchive(urlOrNil:responseOrNil:errorOrNil:)).resume()
-                        currentRelease = latestRelease
-                        updating = true
-                    }
-                    else {
-                        print("[UPDATER] Release \(currentRelease) is up to date")
-                    }
-                }
-                else {
-                    print("[UPDATER] Unable to read latest release")
-                }
-            }
-            catch {
-                print("[UPDATER] Unable to read latest release")
-            }
-        }
-        else {
-            print("[UPDATER] Could not retrieve latest release, using existing")
-        }
-        
-        prefs.set(currentRelease, forKey: RELEASE_KEY)
-        print("[SERVER] Starting server for release \(currentRelease)")
-        buildServer(repoURL: docURL.appendingPathComponent("LiamRank-\(currentRelease)"))
-        if (!updating) {
-            // load page when resources ready
-            DispatchQueue.main.async() {
-                content.webview.loadPage()
-            }
-        }
-    }
-    
-    // extracts a given zip archive, then reloads webview
-    func processArchive(urlOrNil: URL?, responseOrNil: URLResponse?, errorOrNil: Error?) {
-        let fileURL = urlOrNil
-        
-        if (fileURL != nil) {
-            let fileManager = FileManager()
-            
-            // remove existing extracted archive
-            let release = responseOrNil!.url!.lastPathComponent
-            do {
-                try fileManager.removeItem(at: docURL.appendingPathComponent("LiamRank-\(release)"))
-                print("[UPDATER] Removed existing release \(release)")
-            } catch {
-                // directory did not exist
-            }
-            
-            // extract archive
-            do {
-                try fileManager.unzipItem(at: fileURL!, to: docURL)
-            } catch {
-                print ("[UPDATER] Error unzipping: \(error)")
-            }
-        }
-        
-        // load page when resources ready
-        DispatchQueue.main.async() {
-            content.webview.loadPage()
-        }
-    }
-    
-    // get list of files in a given directory
-    // throws if not a directory
-    func ls(dirURL: URL) throws -> String {
-        let files = try FileManager.default.contentsOfDirectory(at: dirURL, includingPropertiesForKeys: nil)
-        var output = ""
-        for file in files {
-            output += file.absoluteString + "\n"
-        }
-        return output
     }
 }
