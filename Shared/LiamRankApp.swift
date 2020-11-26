@@ -15,6 +15,7 @@ import ZIPFoundation
  * - Check for update on app open
  * - App icon
  * - Loading screen
+ * - Fix Mac webview
  */
 
 @main

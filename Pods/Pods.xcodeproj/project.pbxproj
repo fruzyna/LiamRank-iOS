@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		050C8AC7CB576568709AFDA6F5553257 /* GCDWebServerErrorResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = FCAAA463CC21EAAAFBD289062FAE3470 /* GCDWebServerErrorResponse.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		0C3CA6B6257024CA00155EF8 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C3CA6B5257024CA00155EF8 /* CoreServices.framework */; };
 		11C52C464F820414896BDD0DD1C9AA10 /* GCDWebServerDataResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 67F906E5680BCCE55C4525AE8F160983 /* GCDWebServerDataResponse.m */; };
 		151430C81A33188722661CFFEE49FDF4 /* GCDWebServerFileResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 34AD430EE8B69605C00972326F3B1DDB /* GCDWebServerFileResponse.m */; };
 		1F287FB91DC6F181C94C21D49DFF05D2 /* GCDWebServerMultiPartFormRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 808950DBE0F3148D4F2D341B83E7EC96 /* GCDWebServerMultiPartFormRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -43,7 +44,6 @@
 		EA5B2C0D3B143E985C684DFDFE751D47 /* GCDWebServerFileRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F3D48013190481EE4A89EB1A9236BD7 /* GCDWebServerFileRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EA85BEFD1823A3D70E0BA6EB937ABC21 /* GCDWebServerConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F9AF0376C2ECE8617B6A44340668929 /* GCDWebServerConnection.m */; };
 		F3C7E590CABE1D9B23008CBD0F843663 /* GCDWebServerURLEncodedFormRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 9245F38DF9F65F37668300EE8CC2C8AB /* GCDWebServerURLEncodedFormRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F54C7956C6D121D0204C50E25697CDF8 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24B8C6AD03DAC4F7FDC27D3BE7ABDF45 /* MobileCoreServices.framework */; };
 		F94656693978DEE828560B2EA8F6727F /* Pods-LiamRank (iOS)-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B62A002AA151090C7144EA711817B6C /* Pods-LiamRank (iOS)-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FBAC24475A48C28A1DA95E4FFCA8C8CF /* GCDWebServerConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = 0DEE5EA2FDEC701D2BD68E39C5ACF622 /* GCDWebServerConnection.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
@@ -59,8 +59,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		04A381854147678678C48DFE236E682A /* Pods_LiamRank__macOS_.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_LiamRank__macOS_.framework; path = "Pods-LiamRank (macOS).framework"; sourceTree = BUILT_PRODUCTS_DIR; };
-		06B8F3AD6D5E305227860813045021CC /* Pods_LiamRank__iOS_.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_LiamRank__iOS_.framework; path = "Pods-LiamRank (iOS).framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		04A381854147678678C48DFE236E682A /* Pods_LiamRank__macOS_.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LiamRank__macOS_.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		06B8F3AD6D5E305227860813045021CC /* Pods_LiamRank__iOS_.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LiamRank__iOS_.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		0C3CA6B5257024CA00155EF8 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		0DEE5EA2FDEC701D2BD68E39C5ACF622 /* GCDWebServerConnection.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GCDWebServerConnection.h; path = GCDWebServer/Core/GCDWebServerConnection.h; sourceTree = "<group>"; };
 		0F9AF0376C2ECE8617B6A44340668929 /* GCDWebServerConnection.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GCDWebServerConnection.m; path = GCDWebServer/Core/GCDWebServerConnection.m; sourceTree = "<group>"; };
 		1517292E5365D56268557D84F3262E7C /* GCDWebServer.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = GCDWebServer.modulemap; sourceTree = "<group>"; };
@@ -93,10 +94,10 @@
 		955BEA0D7345D1ADF372F99AAF867781 /* Pods-LiamRank (macOS).modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-LiamRank (macOS).modulemap"; sourceTree = "<group>"; };
 		997EC8F9CDB4BE47498B7BF9C90B1893 /* Pods-LiamRank (macOS)-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-LiamRank (macOS)-Info.plist"; sourceTree = "<group>"; };
 		9B891411F6D7219922F5888519C6A553 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.0.sdk/System/Library/Frameworks/CFNetwork.framework; sourceTree = DEVELOPER_DIR; };
-		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		AD3C2095FBAF9C0566A206D058165425 /* GCDWebServerRequest.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GCDWebServerRequest.h; path = GCDWebServer/Core/GCDWebServerRequest.h; sourceTree = "<group>"; };
 		B47D0B893294C7F937F3D392186EA8AB /* GCDWebServerFunctions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GCDWebServerFunctions.h; path = GCDWebServer/Core/GCDWebServerFunctions.h; sourceTree = "<group>"; };
-		B68C1052A3B51DBCF7D960F898AAFA95 /* GCDWebServer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = GCDWebServer.framework; path = GCDWebServer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B68C1052A3B51DBCF7D960F898AAFA95 /* GCDWebServer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GCDWebServer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B89659E6FD1BF547FDBAE717C42072DE /* Pods-LiamRank (macOS)-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-LiamRank (macOS)-acknowledgements.markdown"; sourceTree = "<group>"; };
 		BD14A215E174F22EDC06EF2144C3BF02 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		C04BCBBF7498B3517386F31EFE537692 /* GCDWebServerRequest.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GCDWebServerRequest.m; path = GCDWebServer/Core/GCDWebServerRequest.m; sourceTree = "<group>"; };
@@ -128,7 +129,7 @@
 			files = (
 				B7CD6465DE269DA8C5A08EE3DEBD7952 /* CFNetwork.framework in Frameworks */,
 				2010CB2DF94E3B3847D17BB87D4A5BC0 /* Foundation.framework in Frameworks */,
-				F54C7956C6D121D0204C50E25697CDF8 /* MobileCoreServices.framework in Frameworks */,
+				0C3CA6B6257024CA00155EF8 /* CoreServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -211,6 +212,7 @@
 		6C14DF240AECCBF98DFAD3F11080CCCC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0C3CA6B5257024CA00155EF8 /* CoreServices.framework */,
 				D24C0F3964B47A4159847C3480114AB5 /* iOS */,
 				55FD06DCE4CCE4A0957DDCCCE1B07709 /* OS X */,
 			);
@@ -275,7 +277,6 @@
 				B23CF925C970235A94B343D60ECE3C67 /* Core */,
 				1A29B10AA760CD9E37DA1904F59150E2 /* Support Files */,
 			);
-			name = GCDWebServer;
 			path = GCDWebServer;
 			sourceTree = "<group>";
 		};
@@ -416,7 +417,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1100;
-				LastUpgradeCheck = 1100;
+				LastUpgradeCheck = 1220;
 			};
 			buildConfigurationList = 4821239608C13582E20E6DA73FD5F1F9 /* Build configuration list for PBXProject "Pods" */;
 			compatibilityVersion = "Xcode 11.0";
@@ -517,7 +518,6 @@
 			baseConfigurationReference = 80796788604A6D29340AA75C8535F394 /* Pods-LiamRank (macOS).debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -602,7 +602,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/GCDWebServer/GCDWebServer-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/GCDWebServer/GCDWebServer-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -627,7 +627,6 @@
 			baseConfigurationReference = 1A38C1671F1A492F31EF6C404C94EED6 /* Pods-LiamRank (macOS).release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -841,7 +840,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/GCDWebServer/GCDWebServer-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/GCDWebServer/GCDWebServer-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
