@@ -41,8 +41,18 @@ class WebviewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        clean()
+        
         self.webview.evaluateJavaScript("navigator.userAgent")
+        self.webview.allowsBackForwardNavigationGestures = true
         self.webview.frame = self.view.frame
         self.view.addSubview(self.webview)
+    }
+    
+    // wipe cache
+    func clean() {
+        let websiteDataTypes = NSSet(array: [WKWebsiteDataTypeDiskCache, WKWebsiteDataTypeMemoryCache])
+        let date = Date(timeIntervalSince1970: 0)
+        WKWebsiteDataStore.default().removeData(ofTypes: websiteDataTypes as! Set<String>, modifiedSince: date, completionHandler:{ })
     }
 }

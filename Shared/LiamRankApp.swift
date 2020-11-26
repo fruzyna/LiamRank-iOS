@@ -9,6 +9,13 @@ import SwiftUI
 import GCDWebServer
 import ZIPFoundation
 
+/*
+ * TODO
+ * - Test back gestures
+ * - Fix pit selection
+ * - Check for update on app open
+ */
+
 @main
 struct LiamRankApp: App {
     var content = ContentView()
@@ -44,7 +51,7 @@ struct LiamRankApp: App {
             
             // load in TBA API key
             if (path == "scripts/keys.js") {
-                let API_KEY = ""
+                let API_KEY = "g4Wgdb1euHxs8W83KQyxRC8mKws8uqwDkjTci5PLM5WX63vKbhFyRgjlVBq7VMQr"
                 let response = GCDWebServerDataResponse(text: "API_KEY=\"\(API_KEY)\"")
                 response!.contentType = "text/javascript"
                 return response
@@ -158,19 +165,24 @@ struct LiamRankApp: App {
             do {
                 var pageText = try String(contentsOf: fileURL!)
                 let range = pageText.range(of: "/mail929/LiamRank/releases/tag/")
-                pageText = String(pageText[(range!.upperBound...)])
-                let latestRelease = String(pageText[...pageText.firstIndex(of: "\"")!].dropLast())
-                
-                if (currentRelease != latestRelease) {
-                    // download source
-                    print("[UPDATER] Fetching release \(latestRelease)")
-                    let remoteURL = URL(string: "https://github.com/mail929/LiamRank/archive/\(latestRelease).zip")!
-                    URLSession.shared.downloadTask(with: remoteURL, completionHandler: processArchive(urlOrNil:responseOrNil:errorOrNil:)).resume()
-                    currentRelease = latestRelease
-                    updating = true
+                if range != nil {
+                    pageText = String(pageText[(range!.upperBound...)])
+                    let latestRelease = String(pageText[...pageText.firstIndex(of: "\"")!].dropLast())
+                    
+                    if (currentRelease != latestRelease) {
+                        // download source
+                        print("[UPDATER] Fetching release \(latestRelease)")
+                        let remoteURL = URL(string: "https://github.com/mail929/LiamRank/archive/\(latestRelease).zip")!
+                        URLSession.shared.downloadTask(with: remoteURL, completionHandler: processArchive(urlOrNil:responseOrNil:errorOrNil:)).resume()
+                        currentRelease = latestRelease
+                        updating = true
+                    }
+                    else {
+                        print("[UPDATER] Release \(currentRelease) is up to date")
+                    }
                 }
                 else {
-                    print("[UPDATER] Release \(currentRelease) is up to date")
+                    print("[UPDATER] Unable to read latest release")
                 }
             }
             catch {
