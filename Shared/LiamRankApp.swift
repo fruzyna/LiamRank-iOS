@@ -262,6 +262,17 @@ struct LiamRankApp: App {
     func buildServer(repoURL: URL) {
         let uploadsURL = repoURL.appendingPathComponent("uploads")
         
+        var api_key = ""
+        if let path = Bundle.main.path(forResource: "keys", ofType: "plist") {
+            let dict = NSDictionary(contentsOfFile: path)!
+            if dict.allKeys.contains(where: { (key) -> Bool in key as! String == "API_KEY" }) {
+                let key = dict["API_KEY"]
+                if (key is String) {
+                    api_key = key as! String
+                }
+            }
+        }
+        
         server.addDefaultHandler(forMethod: "GET", request: GCDWebServerRequest.self, processBlock: { request in
             var path = String(request.path.replacingOccurrences(of: "/config/", with: "/assets/").dropFirst())
             if path == "" {
@@ -272,15 +283,8 @@ struct LiamRankApp: App {
             var ext = "json"
             var start: String
             
-            // load in TBA API key
-            if path == "scripts/keys.js" {
-                let API_KEY = "g4Wgdb1euHxs8W83KQyxRC8mKws8uqwDkjTci5PLM5WX63vKbhFyRgjlVBq7VMQr"
-                let response = GCDWebServerDataResponse(text: "API_KEY=\"\(API_KEY)\"")
-                response!.contentType = "text/javascript"
-                return response
-            }
             // respond to request for list of uploads
-            else if path == "getPitResultNames" {
+            if path == "getPitResultNames" {
                 start = "pit"
             }
             else if path == "getImageNames" {
@@ -310,6 +314,12 @@ struct LiamRankApp: App {
                     """
                 let response = GCDWebServerDataResponse(text: contents)
                 response!.contentType = "text/html"
+                return response
+            }
+            // load in TBA API key
+            else if path == "scripts/keys.js" {
+                let response = GCDWebServerDataResponse(text: "API_KEY=\"\(api_key)\"")
+                response!.contentType = "text/javascript"
                 return response
             }
             // return normal files
