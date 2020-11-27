@@ -441,6 +441,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = rc1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.fruzyna.iOS.LiamRank;
 				PRODUCT_NAME = LiamRank;
 				SDKROOT = iphoneos;
@@ -468,6 +469,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = rc1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.fruzyna.iOS.LiamRank;
 				PRODUCT_NAME = LiamRank;
 				SDKROOT = iphoneos;

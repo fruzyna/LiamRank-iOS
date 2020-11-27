@@ -12,9 +12,8 @@ import ZIPFoundation
 /*
  * TODO
  * - Fix pit selection
- * - Check for update on app open
- * - App icon
- * - Loading screen
+ * - Check for update on app re-open
+ * - Loading screen, stay up
  * - Fix Mac webview
  */
 
