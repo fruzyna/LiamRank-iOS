@@ -8,6 +8,7 @@
 import SwiftUI
 import GCDWebServer
 import ZIPFoundation
+import ActionOver
 
 /*
  * TODO
@@ -21,12 +22,14 @@ import ZIPFoundation
 struct LiamRankApp: App {
     @State var promptUser = true
     
-    var content = ContentView()
+    let webview = Webview(url: URL(string: "http://127.0.0.1:8080/index.html")!)
     var body: some Scene {
         WindowGroup {
-            content.actionSheet(isPresented: $promptUser) { ActionSheet(title: Text("Choose a Release"),
-                                                                       message: Text("This will either use an existing local version or download a copy from GitHub."),
-                                                                       buttons: generateActionSheetOptions()) }
+            webview.actionOver(presented: $promptUser,
+                               title: "Choose a Release",
+                               message: "This will either use an existing local version or fetch a copy from GitHub.",
+                               buttons: generateActionSheetOptions(),
+                               ipadAndMacConfiguration: IpadAndMacConfiguration(anchor: UnitPoint.center, arrowEdge: Edge.bottom))
         }
     }
     
@@ -87,12 +90,18 @@ struct LiamRankApp: App {
      */
     
     // generate list of available releases to use
-    func generateActionSheetOptions() -> [ActionSheet.Button] {
-        var buttons = [ActionSheet.Button]()
+    func generateActionSheetOptions() -> [ActionOverButton] {
+        var buttons = [ActionOverButton]()
         let latest = getLastRelease()
-        buttons.append(.default(Text("Last Used: \(latest)")) { start(release: latest) })
-        buttons.append(.default(Text("Latest Remote Release")) { start(release: "latest") })
-        buttons.append(.default(Text("Master Branch")) { start(release: "master") })
+        buttons.append(ActionOverButton(title: "Last Used: \(latest)",
+                                        type: .normal,
+                                        action: { start(release: latest) }))
+        buttons.append(ActionOverButton(title: "Latest Remote Release",
+                                        type: .normal,
+                                        action: { start(release: "latest") }))
+        buttons.append(ActionOverButton(title: "Master Branch",
+                                        type: .normal,
+                                        action: { start(release: "master") }))
         do {
             let files = try FileManager.default.contentsOfDirectory(at: docURL, includingPropertiesForKeys: nil)
             for file in files {
@@ -102,7 +111,9 @@ struct LiamRankApp: App {
                     let release = String(name.split(separator: "-")[1])
                     if release != latest &&
                         release != "master" {
-                        buttons.append(.default(Text("Cached: \(release)")) { start(release: release) })
+                        buttons.append(ActionOverButton(title: "Cached: \(release)",
+                                                        type: .normal,
+                                                        action: { start(release: release) }))
                     }
                 }
             }
@@ -289,7 +300,7 @@ struct LiamRankApp: App {
         
         // load the main page
         DispatchQueue.main.async() {
-            content.webview.loadPage()
+            webview.loadPage()
         }
     }
     

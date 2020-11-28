@@ -8,13 +8,6 @@
 import SwiftUI
 import WebKit
 
-struct ContentView: View {
-    let webview = Webview(url: URL(string: "http://127.0.0.1:8080/index.html")!)
-    var body: some View {
-        webview
-    }
-}
-
 struct Webview: UIViewControllerRepresentable {
     let webviewController = WebviewController()
     let url: URL

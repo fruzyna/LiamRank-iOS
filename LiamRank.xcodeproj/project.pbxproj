@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0C03E39F2572F9C10021E938 /* ActionOver in Frameworks */ = {isa = PBXBuildFile; productRef = 0C03E39E2572F9C10021E938 /* ActionOver */; };
 		0C72BA5E25718CAD004D2A71 /* keys.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0C72BA5D25718CAD004D2A71 /* keys.plist */; };
 		0C72BA5F25718CAD004D2A71 /* keys.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0C72BA5D25718CAD004D2A71 /* keys.plist */; };
 		0C96DE312566016700C9EDF9 /* LiamRankApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C96DE1E2566016700C9EDF9 /* LiamRankApp.swift */; };
@@ -46,6 +47,7 @@
 			files = (
 				0CFBFF50256865470036C94F /* ZIPFoundation in Frameworks */,
 				6D50C8593FF94EECB1F21772 /* Pods_LiamRank__iOS_.framework in Frameworks */,
+				0C03E39F2572F9C10021E938 /* ActionOver in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -150,6 +152,7 @@
 			name = "LiamRank (iOS)";
 			packageProductDependencies = (
 				0CFBFF4F256865470036C94F /* ZIPFoundation */,
+				0C03E39E2572F9C10021E938 /* ActionOver */,
 			);
 			productName = "LiamRank (iOS)";
 			productReference = 0C96DE252566016700C9EDF9 /* LiamRank.app */;
@@ -201,6 +204,7 @@
 			mainGroup = 0C96DE182566016700C9EDF9;
 			packageReferences = (
 				0CFBFF4E256865470036C94F /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
+				0C03E39D2572F9C10021E938 /* XCRemoteSwiftPackageReference "ActionOver" */,
 			);
 			productRefGroup = 0C96DE262566016700C9EDF9 /* Products */;
 			projectDirPath = "";
@@ -570,6 +574,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		0C03E39D2572F9C10021E938 /* XCRemoteSwiftPackageReference "ActionOver" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AndreaMiotto/ActionOver.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.3;
+			};
+		};
 		0CFBFF4E256865470036C94F /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/weichsel/ZIPFoundation.git";
@@ -581,6 +593,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0C03E39E2572F9C10021E938 /* ActionOver */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C03E39D2572F9C10021E938 /* XCRemoteSwiftPackageReference "ActionOver" */;
+			productName = ActionOver;
+		};
 		0CFBFF4F256865470036C94F /* ZIPFoundation */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0CFBFF4E256865470036C94F /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
