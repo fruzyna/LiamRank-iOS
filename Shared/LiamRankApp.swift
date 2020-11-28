@@ -19,10 +19,14 @@ import ZIPFoundation
 
 @main
 struct LiamRankApp: App {
+    @State var promptUser = true
+    
     var content = ContentView()
     var body: some Scene {
         WindowGroup {
-            content
+            content.actionSheet(isPresented: $promptUser) { ActionSheet(title: Text("Choose a Release"),
+                                                                       message: Text("This will either use an existing local version or download a copy from GitHub."),
+                                                                       buttons: generateActionSheetOptions()) }
         }
     }
     
@@ -82,17 +86,48 @@ struct LiamRankApp: App {
      * EXECUTION
      */
     
+    // generate list of available releases to use
+    func generateActionSheetOptions() -> [ActionSheet.Button] {
+        var buttons = [ActionSheet.Button]()
+        let latest = getLastRelease()
+        buttons.append(.default(Text("Last Used: \(latest)")) { start(release: latest) })
+        buttons.append(.default(Text("Latest Remote Release")) { start(release: "latest") })
+        buttons.append(.default(Text("Master Branch")) { start(release: "master") })
+        do {
+            let files = try FileManager.default.contentsOfDirectory(at: docURL, includingPropertiesForKeys: nil)
+            for file in files {
+                // filters by potential releases
+                let name = file.lastPathComponent
+                if name.starts(with: "LiamRank-") {
+                    let release = String(name.split(separator: "-")[1])
+                    if release != latest &&
+                        release != "master" {
+                        buttons.append(.default(Text("Cached: \(release)")) { start(release: release) })
+                    }
+                }
+            }
+        }
+        catch {
+            print("[DIALOG] Failed to get contents of documents directory")
+        }
+        return buttons
+    }
+    
     // on startup
     init() {
-        // TODO: user input on whether to use latest release
-        let useLatest = true
-        if useLatest {
+        if !promptUser {
+            start(release: "latest")
+        }
+    }
+    
+    // runs after init
+    func start(release: String) {
+        if release == "latest" {
             let latestURL = URL(string: "https://github.com/mail929/LiamRank/releases/latest")!
             URLSession.shared.downloadTask(with: latestURL, completionHandler: processLatest(urlOrNil:responseOrNil:errorOrNil:)).resume()
         }
         else {
-            // TODO: user input for release as option
-            useRelease(release: "")
+            useRelease(release: release)
         }
     }
     
