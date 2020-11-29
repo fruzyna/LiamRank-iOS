@@ -8,11 +8,3 @@ target 'LiamRank (iOS)' do
   # Pods for LiamRank (iOS)
   pod "GCDWebServer", "~> 3.0"
 end
-
-target 'LiamRank (macOS)' do
-  # Comment the next line if you don't want to use dynamic frameworks
-  use_frameworks!
-
-  # Pods for LiamRank (macOS)
-
-end
