@@ -29,7 +29,6 @@ struct Webview: UIViewControllerRepresentable {
 
 class WebviewController: UIViewController {
     lazy var webview: WKWebView = WKWebView()
-    lazy var progressbar: UIProgressView = UIProgressView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,6 +38,8 @@ class WebviewController: UIViewController {
         self.webview.evaluateJavaScript("navigator.userAgent")
         self.webview.allowsBackForwardNavigationGestures = true
         self.webview.frame = self.view.frame
+        // cutoff fix on index pages, not selection however
+        self.webview.scrollView.contentInset = UIEdgeInsets.init(top: 0.0, left: 0.0, bottom: 100.0, right: 0.0)
         self.view.addSubview(self.webview)
     }
     
