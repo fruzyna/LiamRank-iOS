@@ -1,8 +1,8 @@
 //
-//  ContentView.swift
-//  LiamRank
+//  WebView.swift
+//  LiamRank (iOS)
 //
-//  Created by Liam on 11/18/20.
+//  Created by Liam on 11/28/20.
 //
 
 import SwiftUI

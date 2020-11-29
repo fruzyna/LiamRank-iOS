@@ -10,8 +10,8 @@
 		0C03E39F2572F9C10021E938 /* ActionOver in Frameworks */ = {isa = PBXBuildFile; productRef = 0C03E39E2572F9C10021E938 /* ActionOver */; };
 		0C72BA5E25718CAD004D2A71 /* keys.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0C72BA5D25718CAD004D2A71 /* keys.plist */; };
 		0C96DE312566016700C9EDF9 /* LiamRankApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C96DE1E2566016700C9EDF9 /* LiamRankApp.swift */; };
-		0C96DE332566016700C9EDF9 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C96DE1F2566016700C9EDF9 /* ContentView.swift */; };
 		0C96DE352566016700C9EDF9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0C96DE202566016700C9EDF9 /* Assets.xcassets */; };
+		0CE4DC7B25733E95008E360B /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE4DC7A25733E95008E360B /* WebView.swift */; };
 		0CFBFF50256865470036C94F /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 0CFBFF4F256865470036C94F /* ZIPFoundation */; };
 		6D50C8593FF94EECB1F21772 /* Pods_LiamRank__iOS_.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76B846E8DF01AFE64C98124B /* Pods_LiamRank__iOS_.framework */; };
 /* End PBXBuildFile section */
@@ -20,10 +20,10 @@
 		0C72BA5D25718CAD004D2A71 /* keys.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = keys.plist; sourceTree = "<group>"; };
 		0C9318B9256D55C8004E455F /* LiamRank.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LiamRank.entitlements; sourceTree = "<group>"; };
 		0C96DE1E2566016700C9EDF9 /* LiamRankApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiamRankApp.swift; sourceTree = "<group>"; };
-		0C96DE1F2566016700C9EDF9 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		0C96DE202566016700C9EDF9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0C96DE252566016700C9EDF9 /* LiamRank.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LiamRank.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C96DE282566016700C9EDF9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0CE4DC7A25733E95008E360B /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
 		3BDF66E01245BD4ED9DB187B /* Pods-LiamRank (macOS).debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LiamRank (macOS).debug.xcconfig"; path = "Target Support Files/Pods-LiamRank (macOS)/Pods-LiamRank (macOS).debug.xcconfig"; sourceTree = "<group>"; };
 		612849B1E3DB61D05E431EB8 /* Pods_LiamRank__macOS_.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LiamRank__macOS_.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		76B846E8DF01AFE64C98124B /* Pods_LiamRank__iOS_.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LiamRank__iOS_.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -62,8 +62,8 @@
 			isa = PBXGroup;
 			children = (
 				0C96DE1E2566016700C9EDF9 /* LiamRankApp.swift */,
+				0CE4DC7A25733E95008E360B /* WebView.swift */,
 				0C72BA5D25718CAD004D2A71 /* keys.plist */,
-				0C96DE1F2566016700C9EDF9 /* ContentView.swift */,
 				0C96DE202566016700C9EDF9 /* Assets.xcassets */,
 			);
 			path = Shared;
@@ -226,7 +226,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0C96DE332566016700C9EDF9 /* ContentView.swift in Sources */,
+				0CE4DC7B25733E95008E360B /* WebView.swift in Sources */,
 				0C96DE312566016700C9EDF9 /* LiamRankApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
