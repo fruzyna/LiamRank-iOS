@@ -55,7 +55,7 @@ class WebviewController: UIViewController {
 extension WebviewController: WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        let req = navigationAction.request.description
+        let req = navigationAction.request.url!.absoluteString
         if req.starts(with: "data") && req.contains(",") {
             let mimeType = req[indexPlus(str: req, char: ":")...indexMinus(str: req, char: ";")]
             var file = "export.txt"
