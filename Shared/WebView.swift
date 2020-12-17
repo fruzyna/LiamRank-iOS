@@ -7,6 +7,7 @@
 
 import SwiftUI
 import WebKit
+import UniformTypeIdentifiers
 
 struct Webview: UIViewControllerRepresentable {
     let webviewController = WebviewController()
@@ -57,25 +58,39 @@ extension WebviewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         let req = navigationAction.request.url!.absoluteString
         if req.starts(with: "data") && req.contains(",") {
+            decisionHandler(WKNavigationActionPolicy.cancel)
+
+            // determine file name
             let mimeType = req[indexPlus(str: req, char: ":")...indexMinus(str: req, char: ";")]
-            var file = "export.txt"
+            var name = "export.txt"
             if mimeType == "text/csv" {
-                file = "export.csv"
+                name = "export.csv"
             }
             else if mimeType == "application/json" {
-                file = "export.json"
+                name = "export.json"
             }
+            
+            // parse data from url
             var data = String(req[indexPlus(str: req, char: ",")...])
             data = data.removingPercentEncoding ?? data
+            
+            // create temp file path
             let docURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            let file = docURL.appendingPathComponent(name)
+            
+            // save file
             do {
-                try data.write(to: docURL.appendingPathComponent(file), atomically: true, encoding: String.Encoding.utf8)
-                print(file, data)
+                try data.write(to: file, atomically: true, encoding: String.Encoding.utf8)
+                
+                // create file picker to move to user-accessible directory
+                let docPicker = UIDocumentPickerViewController(forExporting: [file])
+                docPicker.shouldShowFileExtensions = true
+                self.present(docPicker, animated: true, completion: nil)
+                print(name, data)
             }
             catch {
                 print("Failed to save file")
             }
-            decisionHandler(WKNavigationActionPolicy.cancel)
             return
         }
         decisionHandler(WKNavigationActionPolicy.allow)
