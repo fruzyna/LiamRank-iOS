@@ -26,6 +26,29 @@ struct Webview: UIViewControllerRepresentable {
         let request = URLRequest(url: self.url, cachePolicy: .returnCacheDataElseLoad)
         webviewController.webview.load(request)
     }
+    
+    // create Android like toast notification
+    func showToast(message: String, duration: Double) {
+        let fontSize = CGFloat(12)
+        let width = fontSize / 2 * CGFloat(message.count) + fontSize * 2
+        let label = UILabel(frame: CGRect(x: webviewController.view.frame.size.width/2 - width/2,
+                                          y: webviewController.view.frame.height - 100,
+                                          width: width, height: 35))
+        label.backgroundColor = UIColor.black.withAlphaComponent(0.6)
+        label.textColor = UIColor.white
+        label.font = .systemFont(ofSize: fontSize)
+        label.textAlignment = .center
+        label.text = message
+        label.alpha = 1.0
+        label.layer.cornerRadius = 10
+        label.clipsToBounds = true
+        webviewController.view.addSubview(label)
+        UIView.animate(withDuration: duration / 2, delay: duration / 2, options: .curveEaseOut, animations: {
+            label.alpha = 0.0
+        }, completion: { (isCompleted) in
+            label.removeFromSuperview()
+        })
+    }
 }
 
 class WebviewController: UIViewController {

@@ -165,7 +165,7 @@ struct LiamRankApp: App {
         }
         
         // if the desired release does not exist
-        if !isReleaseCached(release: release) {
+        if !isReleaseCached(release: release) || release == "master" {
             // download it
             fetchRelease(release: release)
         }
@@ -298,6 +298,7 @@ struct LiamRankApp: App {
         
         // load the main page
         DispatchQueue.main.async() {
+            webview.showToast(message: release, duration: 5.0)
             webview.loadPage()
         }
     }
