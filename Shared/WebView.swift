@@ -87,11 +87,16 @@ extension WebviewController: WKNavigationDelegate {
             // determine file name
             let mimeType = req[indexPlus(str: req, char: ":")...indexMinus(str: req, char: ";")]
             var name = "export.txt"
+            var base64 = false
             if mimeType == "text/csv" {
                 name = "export.csv"
             }
             else if mimeType == "application/json" {
                 name = "export.json"
+            }
+            else if mimeType == "application/zip" {
+                name = "export.zip"
+                base64 = true
             }
             
             // parse data from url
@@ -104,13 +109,18 @@ extension WebviewController: WKNavigationDelegate {
             
             // save file
             do {
-                try data.write(to: file, atomically: true, encoding: String.Encoding.utf8)
+                if base64 {
+                    try Data(base64Encoded: data)?.write(to: file)
+                }
+                else {
+                    try data.write(to: file, atomically: true, encoding: String.Encoding.utf8)
+                }
                 
                 // create file picker to move to user-accessible directory
                 let docPicker = UIDocumentPickerViewController(forExporting: [file])
                 docPicker.shouldShowFileExtensions = true
                 self.present(docPicker, animated: true, completion: nil)
-                print(name, data)
+                //print(name, data)
             }
             catch {
                 print("Failed to save file")
