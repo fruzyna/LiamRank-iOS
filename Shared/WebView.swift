@@ -63,6 +63,7 @@ class WebviewController: UIViewController {
         self.webview.allowsBackForwardNavigationGestures = true
         self.webview.frame = self.view.frame
         self.webview.navigationDelegate = self
+        self.webview.uiDelegate = self
         self.webview.autoresizingMask = [.flexibleHeight, .flexibleWidth]
         // cutoff fix on index pages, not selection however
         self.webview.scrollView.contentInset = UIEdgeInsets.init(top: 0.0, left: 0.0, bottom: 100.0, right: 0.0)
@@ -74,6 +75,42 @@ class WebviewController: UIViewController {
         let websiteDataTypes = NSSet(array: [WKWebsiteDataTypeDiskCache, WKWebsiteDataTypeMemoryCache])
         let date = Date(timeIntervalSince1970: 0)
         WKWebsiteDataStore.default().removeData(ofTypes: websiteDataTypes as! Set<String>, modifiedSince: date, completionHandler:{ })
+    }
+}
+
+// handle JS alert, confirm, and input
+extension WebviewController: WKUIDelegate {
+
+    func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void) {
+        let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+        let action = UIAlertAction(title: "OK", style: .default) { (_) in
+            completionHandler()
+        }
+        alert.addAction(action)
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (Bool) -> Void) {
+        let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default) { (_) in
+            completionHandler(true)
+        }
+        alert.addAction(okAction)
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (_) in
+            completionHandler(false)
+        }
+        alert.addAction(cancelAction)
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (String?) -> Void) {
+        let alert = UIAlertController(title: nil, message: prompt, preferredStyle: .alert)
+        alert.addTextField()
+        let action = UIAlertAction(title: "Submit", style: .default) { [unowned alert] _ in
+            completionHandler(alert.textFields?.first?.text)
+        }
+        alert.addAction(action)
+        present(alert, animated: true, completion: nil)
     }
 }
 
