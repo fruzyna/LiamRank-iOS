@@ -100,6 +100,9 @@ struct LiamRankApp: App {
         buttons.append(ActionOverButton(title: "Master Branch",
                                         type: .normal,
                                         action: { start(release: "master") }))
+        buttons.append(ActionOverButton(title: "Custom Release",
+                                        type: .normal,
+                                        action: { promptRelease() }))
         do {
             let files = try FileManager.default.contentsOfDirectory(at: docURL, includingPropertiesForKeys: nil)
             for file in files {
@@ -120,6 +123,19 @@ struct LiamRankApp: App {
             print("[DIALOG] Failed to get contents of documents directory")
         }
         return buttons
+    }
+    
+    // prompt for a custom release
+    func promptRelease() {
+        let alert = UIAlertController(title: "Name a Release", message: "", preferredStyle: .alert)
+        alert.addTextField { (textField) in
+            textField.text = ""
+        }
+        alert.addAction(UIAlertAction(title: "Launch", style: .default, handler: { [weak alert] (_) in
+            let release = alert?.textFields![0]
+            start(release: (release?.text)!)
+        }))
+        webview.webviewController.present(alert, animated: true, completion: nil)
     }
     
     // on startup
