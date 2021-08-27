@@ -1,10 +1,10 @@
 # Uncomment the next line to define a global platform for your project
 # platform :ios, '9.0'
 
-target 'LiamRank (iOS)' do
+target 'WildRank' do
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
 
-  # Pods for LiamRank (iOS)
+  # Pods for WildRank
   pod "GCDWebServer", "~> 3.0"
 end
