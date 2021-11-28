@@ -49,6 +49,9 @@ struct WildRankApp: App {
                 let releaseRange = pageText.range(of: releaseSearchKey)
                 var latestRelease = String(pageText[(releaseRange!.upperBound...)])
                 latestRelease = String(latestRelease[...latestRelease.firstIndex(of: "\"")!].dropLast())
+                if (latestRelease.contains("&")) {
+                    latestRelease = String(latestRelease[...latestRelease.firstIndex(of: "&")!].dropLast())
+                }
                 print("[UPDATER] Latest release is \(latestRelease)")
                 return latestRelease
             }
@@ -321,7 +324,7 @@ struct WildRankApp: App {
     
     // start webserver
     func buildServer(repoURL: URL) {
-        let uploadsURL = repoURL.appendingPathComponent("uploads")
+        var uploadsURL = repoURL.appendingPathComponent("uploads")
         
         var api_key = ""
         if let path = Bundle.main.path(forResource: "keys", ofType: "plist") {
@@ -414,7 +417,7 @@ struct WildRankApp: App {
                 if body.contains("|||") {
                     let parts = body.split(separator: "|")
                     if parts.count == 2 {
-                        let name = parts[0]
+                        var name = parts[0]
                         let data = parts[1]
                         if data.starts(with: "data:image/png;base64,") {
                             let decoded = data.data(using: .utf8)
@@ -428,12 +431,39 @@ struct WildRankApp: App {
                             }
                         }
                         else {
+                            // build url
+                            if (!name.contains(".")) {
+                                name += ".json"
+                            }
+                            
+                            // backup and change directory if getting a config
+                            if name.hasSuffix("config.json") {
+                                uploadsURL = repoURL.appendingPathComponent("assets")
+                                let file = uploadsURL.appendingPathComponent("\(name)")
+                                let backup = file.appendingPathExtension("bkp")
+                                do {
+                                    if (FileManager.default.fileExists(atPath: backup.path)) {
+                                        try FileManager.default.removeItem(at: backup)
+                                    }
+                                    else {
+                                        print("[POST] No \(name).bkp to replace")
+                                    }
+                                    try FileManager.default.moveItem(at: file, to: backup)
+                                }
+                                catch {
+                                    print("[POST] Failed to backup \(name)")
+                                }
+                            }
+                            
+                            // save file
+                            let file = uploadsURL.appendingPathComponent("\(name)")
+                            print("[POST] Saving to \(file)")
                             do {
-                                try data.write(to: uploadsURL.appendingPathComponent("\(name).json"), atomically: false, encoding: .utf8)
+                                try data.write(to: file, atomically: false, encoding: .utf8)
                                 return GCDWebServerResponse(statusCode: 200)
                             }
                             catch {
-                                print("[POST] Failed to write \(name).json")
+                                print("[POST] Failed to write \(name)")
                                 return GCDWebServerResponse(statusCode: 415)
                             }
                         }
